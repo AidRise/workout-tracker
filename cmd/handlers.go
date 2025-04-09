@@ -8,7 +8,11 @@ import (
 
 func home(w  http.ResponseWriter, r *http.Request) {
 	fmt.Println("Home route being hittt!!!!")
-	w.Write([]byte("Welcome home to the workout app"))
+
+	_, err := w.Write([]byte("Welcome home to the workout app"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func getExercises(w  http.ResponseWriter, r *http.Request) {
@@ -22,7 +26,10 @@ func getExercises(w  http.ResponseWriter, r *http.Request) {
 	js = append(js, '\n')
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	_, err = w.Write(js)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func getExercise(w  http.ResponseWriter, r *http.Request) {
@@ -32,7 +39,7 @@ func getExercise(w  http.ResponseWriter, r *http.Request) {
 
 	exercise, ok := findExerciseById(exerciseID)
 	if !ok {
-		w.Write([]byte(fmt.Sprintf("could not find exercise id: %s", exerciseID)))
+		http.Error(w, fmt.Sprintf("could not find exercise id: %s", exerciseID), http.StatusNotFound)
 	}
 
 	js, err := json.Marshal(exercise)
@@ -43,7 +50,10 @@ func getExercise(w  http.ResponseWriter, r *http.Request) {
 	js = append(js, '\n')
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	_, err = w.Write(js)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func findExerciseById(id string) (map[string]interface{}, bool) {
